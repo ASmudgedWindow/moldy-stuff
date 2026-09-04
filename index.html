@@ -294,7 +294,7 @@
       <!-- ENCRYPT / DECRYPT -->
       <section class="panel active" data-panel="crypt">
         <h2>Encrypt / Decrypt</h2>
-        <p class="panel-desc">AES-256-GCM, keyed off a passphrase (PBKDF2, 150k iterations). Everything happens locally in your browser — nothing is sent anywhere.</p>
+        <p class="panel-desc">Completely encrypt something with a key. Everything happens locally in your browser — nothing is sent anywhere.</p>
 
         <label for="crypt-text">Text</label>
         <textarea id="crypt-text" placeholder="Type or paste something..."></textarea>
@@ -315,7 +315,7 @@
       <!-- MOLDY TEXT MACHINE -->
       <section class="panel" data-panel="cursed">
         <h2>Moldy Text Machine</h2>
-        <p class="panel-desc">Feed it normal text, get back something cursed.</p>
+        <p class="panel-desc">Feed it normal text, get back something moldy and cursed</p>
 
         <label for="cursed-input">Text</label>
         <input type="text" id="cursed-input" placeholder="type something normal">
@@ -332,7 +332,7 @@
       <!-- LINKS -->
       <section class="panel" data-panel="links">
         <h2>Links</h2>
-        <p class="panel-desc">Stuff I like. Edit the array in this page's source (search for <code>myLinks</code>) to add your own.</p>
+        <p class="panel-desc">Random links that I like. Some are just jokes, others are pretty neat.</p>
         <div class="links-grid" id="links-grid"></div>
       </section>
 
@@ -465,18 +465,11 @@
     const val = cursedOutput.textContent;
     if (val && !val.startsWith('—')) navigator.clipboard.writeText(val);
   });
-
-  // ---------- Links list ----------
-  // Edit this array to add/remove/change your links.
-  // Each entry needs a "name" (shown on the card) and a "url" (where it goes).
-  //
-  //   ADD a link:    copy a line below and change name/url
-  //   DELETE a link: delete its whole { ... } line
-  //   EDIT a link:   just change the text inside the quotes
-  //
+  
   const myLinks = [
-    { name: 'Example Site One', url: 'https://example.com' },
-    { name: 'Example Site Two', url: 'https://example.com' },
+    { name: 'WebGL Fluid Sim.', url: 'https://paveldogreat.github.io/WebGL-Fluid-Simulation/' },
+    { name: 'IHasABucket', url: 'https://ihasabucket.com' },
+    { name: 'What Beats Rock?', url: 'https://whatbeatsrock.com' },
     // { name: 'My Cool Site', url: 'https://mycoolsite.com' },
   ];
 
