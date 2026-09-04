@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stuff — Moldy.App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="icon-vortex.svg">
+<link rel="stylesheet" href="shell.css">
+<style>
+  /* --- page-specific: tools layout (scoped to this page only) --- */
+
+  .main--tools {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 3.5rem 3rem 5rem;
+    text-align: left;
+  }
+
+  .tools-shell {
+    width: 100%;
+    max-width: 880px;
+  }
+
+  .tools-shell .title,
+  .tools-shell .subtitle {
+    display: block;
+  }
+
+  .tools-shell .title {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+  }
+
+  .tools-shell .subtitle {
+    margin-bottom: 2.4rem;
+  }
+
+  .tab-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .tab-btn {
+    font-family: inherit;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-dim);
+    background: rgba(143, 184, 255, 0.04);
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    padding: 0.5rem 1.1rem;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .tab-btn:hover {
+    color: var(--ink);
+    border-color: rgba(143, 184, 255, 0.4);
+  }
+
+  .tab-btn.active {
+    color: var(--ink);
+    background: rgba(143, 184, 255, 0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 14px rgba(143, 184, 255, 0.2);
+  }
+
+  .panel {
+    display: none;
+    background: linear-gradient(180deg, rgba(15, 20, 36, 0.55), rgba(10, 14, 26, 0.35));
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    padding: 1.8rem;
+    backdrop-filter: blur(8px);
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  .panel h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+
+  .panel .panel-desc {
+    margin: 0 0 1.4rem;
+    color: var(--ink-dim);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 1rem 0 0.4rem;
+  }
+
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"],
+  input[type="password"],
+  textarea,
+  select {
+    width: 100%;
+    font-family: 'JetBrains Mono', 'Sora', monospace;
+    font-size: 0.88rem;
+    color: var(--ink);
+    background: rgba(5, 6, 10, 0.55);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 0.7rem 0.85rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(143, 184, 255, 0.12);
+  }
+
+  textarea {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .row {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .row > * { flex: 1; min-width: 180px; }
+
+  .btn-group {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  button.action {
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #05060a;
+    background: linear-gradient(100deg, var(--accent), var(--accent-2));
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1.3rem;
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.15s ease;
+  }
+  button.action:hover { filter: brightness(1.1); }
+  button.action:active { transform: scale(0.98); }
+
+  button.ghost {
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 0.65rem 1.1rem;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  button.ghost:hover { color: var(--ink); border-color: rgba(143, 184, 255, 0.4); }
+
+  .output-box {
+    margin-top: 1rem;
+    background: rgba(5, 6, 10, 0.6);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 0.85rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--accent);
+    word-break: break-all;
+    white-space: pre-wrap;
+    min-height: 2.4rem;
+  }
+
+  .output-box--cursed {
+    min-height: 220px;
+    max-height: 420px;
+    overflow-y: auto;
+    font-size: 1.3rem;
+    line-height: 2.4;
+  }
+
+  .hint {
+    margin-top: 0.6rem;
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+
+  .status {
+    font-size: 0.78rem;
+    margin-top: 0.5rem;
+    min-height: 1.1rem;
+  }
+  .status.ok { color: #8fffc0; }
+  .status.err { color: #ff9d9d; }
+
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent-2);
+  }
+
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.75rem 0.9rem;
+    background: rgba(143, 184, 255, 0.04);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  }
+  .link-card:hover {
+    border-color: rgba(143, 184, 255, 0.4);
+    background: rgba(143, 184, 255, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .link-avatar {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #05060a;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  }
+
+  .link-meta { min-width: 0; }
+  .link-name { color: var(--ink); font-size: 0.88rem; font-weight: 600; }
+  .link-url { color: var(--ink-dim); font-size: 0.74rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  @media (max-width: 720px) {
+    .main--tools { padding: 2.2rem 1.2rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<div class="layout">
+  <nav class="nav">
+    <a class="nav-brand" href="https://moldy.app" data-text="MOLDY.APP">MOLDY.APP</a>
+    <ul class="nav-links">
+      <li><a href="https://projects.moldy.app" data-text="Projects">Projects</a></li>
+      <li><a href="https://info.moldy.app" data-text="Info">Info</a></li>
+      <li><a href="https://stuff.moldy.app" class="active" data-text="Stuff">Stuff</a></li>
+    </ul>
+  </nav>
+
+  <main class="main main--tools">
+    <div class="tools-shell">
+      <h1 class="title" data-glow-title data-text="Stuff">Stuff</h1>
+      <p class="subtitle">A few tools I keep around.</p>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="crypt">Encrypt / Decrypt</button>
+        <button class="tab-btn" data-tab="cursed">Moldy Text Machine</button>
+        <button class="tab-btn" data-tab="links">Links</button>
+      </div>
+
+      <!-- ENCRYPT / DECRYPT -->
+      <section class="panel active" data-panel="crypt">
+        <h2>Encrypt / Decrypt</h2>
+        <p class="panel-desc">AES-256-GCM, keyed off a passphrase (PBKDF2, 150k iterations). Everything happens locally in your browser — nothing is sent anywhere.</p>
+
+        <label for="crypt-text">Text</label>
+        <textarea id="crypt-text" placeholder="Type or paste something..."></textarea>
+
+        <label for="crypt-key">Passphrase / Key</label>
+        <input type="password" id="crypt-key" placeholder="your key or seed phrase">
+
+        <div class="btn-group">
+          <button class="action" id="btn-encrypt">Encrypt</button>
+          <button class="action" id="btn-decrypt">Decrypt</button>
+          <button class="ghost" id="btn-crypt-clear">Clear</button>
+        </div>
+
+        <div class="output-box" id="crypt-output">— output will appear here —</div>
+        <div class="status" id="crypt-status"></div>
+      </section>
+
+      <!-- MOLDY TEXT MACHINE -->
+      <section class="panel" data-panel="cursed">
+        <h2>Moldy Text Machine</h2>
+        <p class="panel-desc">Feed it normal text, get back something cursed.</p>
+
+        <label for="cursed-input">Text</label>
+        <input type="text" id="cursed-input" placeholder="type something normal">
+
+        <label for="cursed-intensity">Intensity</label>
+        <input type="range" id="cursed-intensity" min="1" max="12" value="5">
+
+        <div class="output-box output-box--cursed" id="cursed-output">— cursed text will appear here —</div>
+        <div class="btn-group">
+          <button class="ghost" id="btn-cursed-copy">Copy</button>
+        </div>
+      </section>
+
+      <!-- LINKS -->
+      <section class="panel" data-panel="links">
+        <h2>Links</h2>
+        <p class="panel-desc">Stuff I like. Edit the array in this page's source (search for <code>myLinks</code>) to add your own.</p>
+        <div class="links-grid" id="links-grid"></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script src="starfield.js"></script>
+<script>
+  // ---------- tab switching ----------
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+    });
+  });
+
+  // ---------- Encrypt / Decrypt (AES-256-GCM via Web Crypto) ----------
+  const cryptText = document.getElementById('crypt-text');
+  const cryptKey = document.getElementById('crypt-key');
+  const cryptOutput = document.getElementById('crypt-output');
+  const cryptStatus = document.getElementById('crypt-status');
+
+  function setStatus(el, msg, ok) {
+    el.textContent = msg;
+    el.className = 'status ' + (ok ? 'ok' : 'err');
+  }
+
+  async function deriveKey(passphrase, salt) {
+    const enc = new TextEncoder();
+    const baseKey = await crypto.subtle.importKey(
+      'raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']
+    );
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations: 150000, hash: 'SHA-256' },
+      baseKey,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
+
+  function bufToB64(buf) {
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  }
+  function b64ToBuf(b64) {
+    return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  }
+
+  document.getElementById('btn-encrypt').addEventListener('click', async () => {
+    const text = cryptText.value;
+    const pass = cryptKey.value;
+    if (!text || !pass) { setStatus(cryptStatus, 'Enter both text and a passphrase.', false); return; }
+    try {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(pass, salt);
+      const enc = new TextEncoder();
+      const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+      const combined = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+      combined.set(salt, 0);
+      combined.set(iv, salt.length);
+      combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
+      cryptOutput.textContent = bufToB64(combined.buffer);
+      setStatus(cryptStatus, 'Encrypted.', true);
+    } catch (e) {
+      setStatus(cryptStatus, 'Encryption failed: ' + e.message, false);
+    }
+  });
+
+  document.getElementById('btn-decrypt').addEventListener('click', async () => {
+    const text = cryptText.value.trim();
+    const pass = cryptKey.value;
+    if (!text || !pass) { setStatus(cryptStatus, 'Enter both ciphertext and a passphrase.', false); return; }
+    try {
+      const combined = b64ToBuf(text);
+      const salt = combined.slice(0, 16);
+      const iv = combined.slice(16, 28);
+      const ciphertext = combined.slice(28);
+      const key = await deriveKey(pass, salt);
+      const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+      cryptOutput.textContent = new TextDecoder().decode(plainBuf);
+      setStatus(cryptStatus, 'Decrypted.', true);
+    } catch (e) {
+      setStatus(cryptStatus, 'Decryption failed — wrong passphrase, or not valid ciphertext.', false);
+    }
+  });
+
+  document.getElementById('btn-crypt-clear').addEventListener('click', () => {
+    cryptText.value = '';
+    cryptKey.value = '';
+    cryptOutput.textContent = '— output will appear here —';
+    setStatus(cryptStatus, '', true);
+  });
+
+  // ---------- Moldy Text Machine (zalgo / cursed text) ----------
+  const zalgoUp = ['̍','̎','̄','̅','̿','̑','̆','̐','͒','͗','͑','̇','̈','̊','͂','̓','̈','͊','͋','͌','̃','̂','̌','͐','́','̋'];
+  const zalgoDown = ['̖','̗','̘','̙','̜','̝','̞','̟','̠','̤','̥','̦','̩','̪','̫','̬','̭','̮','̯','̰','̱','̲','̳','̹','̺','̻','̼'];
+  const zalgoMid = ['̕','̛','̀','́','͘','̡','̢','̧','̨','̴','̵','̶','͜','͝','͞','͟','͠','͢','̸','̷'];
+
+  function cursify(str, intensity) {
+    let out = '';
+    for (const ch of str) {
+      out += ch;
+      if (ch === ' ') continue;
+      const upCount = Math.floor(Math.random() * intensity * 0.6);
+      const downCount = Math.floor(Math.random() * intensity * 0.6);
+      const midCount = Math.floor(Math.random() * intensity * 0.3);
+      for (let i = 0; i < upCount; i++) out += zalgoUp[Math.floor(Math.random() * zalgoUp.length)];
+      for (let i = 0; i < downCount; i++) out += zalgoDown[Math.floor(Math.random() * zalgoDown.length)];
+      for (let i = 0; i < midCount; i++) out += zalgoMid[Math.floor(Math.random() * zalgoMid.length)];
+    }
+    return out;
+  }
+
+  const cursedInput = document.getElementById('cursed-input');
+  const cursedIntensity = document.getElementById('cursed-intensity');
+  const cursedOutput = document.getElementById('cursed-output');
+
+  function updateCursed() {
+    const val = cursedInput.value;
+    cursedOutput.textContent = val ? cursify(val, Number(cursedIntensity.value)) : '— cursed text will appear here —';
+  }
+  cursedInput.addEventListener('input', updateCursed);
+  cursedIntensity.addEventListener('input', updateCursed);
+
+  document.getElementById('btn-cursed-copy').addEventListener('click', () => {
+    const val = cursedOutput.textContent;
+    if (val && !val.startsWith('—')) navigator.clipboard.writeText(val);
+  });
+
+  // ---------- Links list ----------
+  // Edit this array to add/remove/change your links.
+  // Each entry needs a "name" (shown on the card) and a "url" (where it goes).
+  //
+  //   ADD a link:    copy a line below and change name/url
+  //   DELETE a link: delete its whole { ... } line
+  //   EDIT a link:   just change the text inside the quotes
+  //
+  const myLinks = [
+    { name: 'Example Site One', url: 'https://example.com' },
+    { name: 'Example Site Two', url: 'https://example.com' },
+    // { name: 'My Cool Site', url: 'https://mycoolsite.com' },
+  ];
+
+  const linksGrid = document.getElementById('links-grid');
+  myLinks.forEach(link => {
+    const a = document.createElement('a');
+    a.className = 'link-card';
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    const initial = link.name.trim().charAt(0).toUpperCase() || '?';
+    a.innerHTML = `
+      <div class="link-avatar">${initial}</div>
+      <div class="link-meta">
+        <div class="link-name">${link.name}</div>
+        <div class="link-url">${link.url.replace(/^https?:\/\//, '')}</div>
+      </div>
+    `;
+    linksGrid.appendChild(a);
+  });
+</script>
+</body>
+</html>
